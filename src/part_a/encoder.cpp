@@ -2,6 +2,10 @@
 // Created by Hasan on 17/05/20.
 //
 
+#ifndef IP_ASSIGNMENT_PARTA_ENCODER_CPP
+#define IP_ASSIGNMENT_PARTA_ENCODER_CPP
+
+
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
@@ -10,14 +14,19 @@
  * TODO
  */
 
+//namespace encoder {
+
+
 //int process_cmd_line(int argc, char* argv[]);
-auto debug_cmd_line_args(const char * carrier, const char * message, const char * encoded) -> void;
+auto debug_cmd_line_args(const char *carrier, const char *message, const char *encoded) -> void;
+auto debug_image(const char* image_name, const cv::Mat& image) -> void;
 auto encode(cv::Mat carrier, cv::Mat message) -> cv::Mat;
+
 /**
- * Part A encoding: `program.exe <carrier_dir> <message_dir> <encoded_des>`
- * Part A decoding: `program.exe <carrier_dir> <encoded_dir> <decoded_des>`
- */
-auto a_encoder_main(int argc, char* argv[]) -> int {
+* Part A encoding: `program.exe <carrier_dir> <message_dir> <encoded_des>`
+* Part A decoding: `program.exe <carrier_dir> <encoded_dir> <decoded_des>`
+*/
+auto a_encoder_main(int argc, char *argv[]) -> int {
     // Process command line inputs and handle errors
     if (argc < 5) {
         std::cerr <<
@@ -38,7 +47,7 @@ auto a_encoder_main(int argc, char* argv[]) -> int {
     debug_cmd_line_args(carrier_name, message_name, encoded_des);
 
     cv::Mat carrier = cv::imread(carrier_name, cv::IMREAD_GRAYSCALE);
-    cv::Mat message = cv::imread(carrier_name, cv::IMREAD_GRAYSCALE);
+    cv::Mat message = cv::imread(message_name, cv::IMREAD_GRAYSCALE);
 
     if (carrier.empty() || message.empty()) {
         std::cerr <<
@@ -71,7 +80,7 @@ auto a_encoder_main(int argc, char* argv[]) -> int {
     // Output
     try {
         image_write_result = cv::imwrite(encoded_des, encoded);
-    } catch (const cv::Exception& cv_ex) {
+    } catch (const cv::Exception &cv_ex) {
         std::cerr << "ERROR: Encoded image write failed.\n" << cv_ex.what() << std::endl;
     }
 
@@ -85,43 +94,65 @@ auto a_encoder_main(int argc, char* argv[]) -> int {
 }
 
 /**
- * # Usage:
- *
- * To run the program, execute it with: `program.exe <carrier_dir> <output_dir>`
- * Part A encoding: `program.exe <carrier_dir> <message_dir> <encoded_des>`
- * Part A decoding: `program.exe <carrier_dir> <encoded_dir> <decoded_des>`
- *
- * Part B encoding: `program.exe <carrier_dir> <message_dir> <encoded_des>`
- * Part B decoding: `program.exe <carrier_dir> <encoded_dir> <decoded_des>`
- *
- * @param argc
- * @param argv
- */
-auto process_cmd_line(int argc, char* argv[]) -> int {
+* # Usage:
+*
+* To run the program, execute it with: `program.exe <carrier_dir> <output_dir>`
+* Part A encoding: `program.exe <carrier_dir> <message_dir> <encoded_des>`
+* Part A decoding: `program.exe <carrier_dir> <encoded_dir> <decoded_des>`
+*
+* Part B encoding: `program.exe <carrier_dir> <message_dir> <encoded_des>`
+* Part B decoding: `program.exe <carrier_dir> <encoded_dir> <decoded_des>`
+*
+* @param argc
+* @param argv
+*/
+auto process_cmd_line(int argc, char *argv[]) -> int {
     std::cout << "Processing..." << std::endl;
 
     return 0;
 }
 
-auto debug_cmd_line_args(const char * carrier, const char * message, const char * encoded) -> void {
+auto debug_cmd_line_args(const char *carrier, const char *message, const char *encoded) -> void {
     std::cout << "Carrier: " << carrier << "\nMessage: " << message << "\nEncoded: " << encoded << std::endl;
 }
 
+auto debug_image(const char *image_name, const cv::Mat &image) -> void {
+    cv::namedWindow(image_name, cv::WINDOW_AUTOSIZE);
+
+    cv::imshow(image_name, image);
+
+    cv::waitKey(0);
+}
+
 /**
- * TODO What about the overflow?
- *
- * @param carrier
- * @param message
- * @return
- */
+* TODO What about the overflow?
+*
+* @param carrier
+* @param message
+* @return
+*/
 auto encode(cv::Mat carrier, cv::Mat message) -> cv::Mat {
     cv::Mat encoded;
 
+    debug_image("Original test", message);
+
     // convert message to binary
     // TODO: cv::THRESH_BINARY or cv::THRESH_BINARY_INV?
+//    cv::threshold(message, message, 0, 1, cv::THRESH_BINARY_INV);
     cv::threshold(message, message, 0, 1, cv::THRESH_BINARY);
+
+    debug_image("Threshold test", message * 255);
+
+    // What is even the point of this?!
+//    message = cv::Mat_<uchar>::ones(message.size()) - message;
+
+    // print image
+
+    debug_image("Binary test", message * 255);
 
     encoded = carrier + message;
 
     return encoded;
 }
+//}
+#endif // IP_ASSIGNMENT_PARTA_ENCODER_CPP
