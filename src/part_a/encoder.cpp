@@ -11,15 +11,15 @@
  */
 
 //int process_cmd_line(int argc, char* argv[]);
-void debug_cmd_line_args(const char * carrier, const char * message, const char * encoded);
-
+auto debug_cmd_line_args(const char * carrier, const char * message, const char * encoded) -> void;
+auto encode(cv::Mat carrier, cv::Mat message) -> cv::Mat;
 /**
  * Part A encoding: `program.exe <carrier_dir> <message_dir> <encoded_des>`
  * Part A decoding: `program.exe <carrier_dir> <encoded_dir> <decoded_des>`
  */
-int a_encoder_main(int argc, char* argv[]) {
+auto a_encoder_main(int argc, char* argv[]) -> int {
     // Process command line inputs and handle errors
-    if (argc < 4) {
+    if (argc < 5) {
         std::cerr <<
                   "Not enough arguments into the program.\nThe usage is program.exe <carrier_dir> <message_dir> <encoded_des>"
                   << std::endl;
@@ -27,14 +27,13 @@ int a_encoder_main(int argc, char* argv[]) {
         return -1;
     }
 
-    auto carrier_name = argv[1];
-    auto message_name = argv[2];
-    auto encoded_des = argv[3];
+    auto carrier_name = argv[2];
+    auto message_name = argv[3];
+    auto encoded_des = argv[4];
 
-    cv::Mat encoded;
     auto image_write_result = false;
 
-    std::cout << "Processing..." << std::endl;
+    std::cout << "Processing encoder..." << std::endl;
 
     debug_cmd_line_args(carrier_name, message_name, encoded_des);
 
@@ -48,12 +47,24 @@ int a_encoder_main(int argc, char* argv[]) {
         return -1;
     }
 
+    std::cout << "SUCCESS: Images loaded successfully" << std::endl;
+
+    // Check if the images are the same size
+
+    if (carrier.size() != message.size()) {
+        std::cerr <<
+                  "ERROR: The carrier and the message are not the same size."
+                  << std::endl;
+        return -1;
+    }
+
+    std::cout << "SUCCESS: Images compatible." << std::endl;
+
     // Setup complete
 
     // Processing
 
-
-
+    auto encoded = encode(carrier, message);
 
     // Processing complete.
 
@@ -86,12 +97,31 @@ int a_encoder_main(int argc, char* argv[]) {
  * @param argc
  * @param argv
  */
-int process_cmd_line(int argc, char* argv[]) {
+auto process_cmd_line(int argc, char* argv[]) -> int {
     std::cout << "Processing..." << std::endl;
 
     return 0;
 }
 
-void debug_cmd_line_args(const char * carrier, const char * message, const char * encoded) {
+auto debug_cmd_line_args(const char * carrier, const char * message, const char * encoded) -> void {
     std::cout << "Carrier: " << carrier << "\nMessage: " << message << "\nEncoded: " << encoded << std::endl;
+}
+
+/**
+ * TODO What about the overflow?
+ *
+ * @param carrier
+ * @param message
+ * @return
+ */
+auto encode(cv::Mat carrier, cv::Mat message) -> cv::Mat {
+    cv::Mat encoded;
+
+    // convert message to binary
+    // TODO: cv::THRESH_BINARY or cv::THRESH_BINARY_INV?
+    cv::threshold(message, message, 0, 1, cv::THRESH_BINARY);
+
+    encoded = carrier + message;
+
+    return encoded;
 }

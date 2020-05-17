@@ -6,8 +6,11 @@
  *
  */
 
-int a_encoder_main(int argc, char* argv[]);
-int a_decoder_main(int argc, char* argv[]);
+#include <string>
+#include <iostream>
+
+auto a_encoder_main(int argc, char* argv[]) -> int;
+auto a_decoder_main(int argc, char* argv[]) -> int;
 //
 ///**
 // * TODO Function should include creating directories if it does not exist.
@@ -17,7 +20,25 @@ int a_decoder_main(int argc, char* argv[]);
 //      `mainprog.exe --encode <carrier_dir> <message_dir> <encoded_des>`
 // */
 //
-int main(int argc, char* argv[]) {
-    auto result = a_encoder_main(argc, argv);
-    return result;
+auto main(int argc, char* argv[]) -> int {
+
+    std::string encode_flag = "--encode";
+    std::string decode_flag = "--decode";
+
+    // TODO print usage
+    if (argc < 5) {
+        std::cerr <<
+                  "Not enough arguments into the program.\nThe usage is program.exe <carrier_dir> <message_dir> <encoded_des>"
+                  << std::endl;
+
+        return -1;
+    }
+
+    if (encode_flag.compare(argv[1]) == 0) {
+        return a_encoder_main(argc, argv);
+    } else if (decode_flag.compare(argv[1]) == 0) {
+        return a_decoder_main(argc, argv);
+    }
+
+    return -1;
 }
