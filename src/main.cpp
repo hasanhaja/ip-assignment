@@ -30,8 +30,15 @@ auto d_decoder_main(int argc, char* argv[]) -> int;
 //
 auto main(int argc, char* argv[]) -> int {
 
-    std::string encode_flag = "--encode";
-    std::string decode_flag = "--decode";
+    std::string a_encode_flag = "--encode-a";
+    std::string a_decode_flag = "--decode-a";
+
+    std::string b_encode_flag = "--encode-b";
+    std::string b_decode_flag = "--decode-b";
+
+    std::string d_encode_flag = "--encode-d";
+    std::string d_decode_flag = "--decode-d";
+
     std::string gen_noise_flag = "--noise";
 
     // TODO print usage
@@ -52,9 +59,17 @@ auto main(int argc, char* argv[]) -> int {
         return -1;
     }
 
-    if (encode_flag.compare(argv[1]) == 0) {
+    if (a_encode_flag.compare(argv[1]) == 0) {
+        return a_encoder_main(argc, argv);
+    } else if (a_decode_flag.compare(argv[1]) == 0) {
+        return a_decoder_main(argc, argv);
+    } else if (b_encode_flag.compare(argv[1]) == 0) {
+        return b_encoder_main(argc, argv);
+    } else if (b_decode_flag.compare(argv[1]) == 0) {
+        return b_decoder_main(argc, argv);
+    } else if (d_encode_flag.compare(argv[1]) == 0) {
         return d_encoder_main(argc, argv);
-    } else if (decode_flag.compare(argv[1]) == 0) {
+    } else if (d_decode_flag.compare(argv[1]) == 0) {
         return d_decoder_main(argc, argv);
     }
 

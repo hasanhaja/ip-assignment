@@ -24,8 +24,8 @@
 //int process_cmd_line(int argc, char* argv[]);
 auto debug_cmd_line_args(const char *carrier, const char *message, const char *encoded) -> void;
 auto debug_image(const char* image_name, const cv::Mat& image) -> void;
-auto a_decode(cv::Mat carrier, cv::Mat message) -> cv::Mat;
-auto hash(const char* passsword) -> unsigned long;
+auto a_decode(cv::Mat carrier, cv::Mat message) -> cv::Mat_<uchar>;
+auto hash(const char* password) -> unsigned long;
 
 /**
 * Part A encoding: `program.exe <carrier_dir> <message_dir> <encoded_des>`

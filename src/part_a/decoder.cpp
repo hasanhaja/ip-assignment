@@ -17,7 +17,7 @@
 //namespace decoder {
 
 auto debug_cmd_line_args(const char * carrier, const char * message, const char * encoded) -> void;
-auto a_decode(cv::Mat carrier, cv::Mat encoded) -> cv::Mat;
+auto a_decode(cv::Mat carrier, cv::Mat encoded) -> cv::Mat_<uchar>;
 auto debug_image(const char* image_name, const cv::Mat& image) -> void;
 
 auto a_decoder_main(int argc, char* argv[]) -> int {
@@ -125,7 +125,7 @@ auto a_decoder_main(int argc, char* argv[]) -> int {
 * @param message
 * @return
 */
-auto a_decode(cv::Mat carrier, cv::Mat encoded) -> cv::Mat {
+auto a_decode(cv::Mat carrier, cv::Mat encoded) -> cv::Mat_<uchar> {
 
     // uchar so it cannot be negative and so it isn't over 8bits
     cv::Mat decoded = cv::Mat_<uchar>::ones(carrier.size());

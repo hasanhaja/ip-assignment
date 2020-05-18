@@ -24,7 +24,7 @@
 //int process_cmd_line(int argc, char* argv[]);
 auto debug_cmd_line_args(const char *carrier, const char *message, const char *encoded) -> void;
 auto debug_image(const char* image_name, const cv::Mat& image) -> void;
-auto a_encode(cv::Mat carrier, cv::Mat message) -> cv::Mat;
+auto a_encode(cv::Mat carrier, cv::Mat message) -> cv::Mat_<uchar>;
 auto hash(const char* password) -> unsigned long;
 
 /**
@@ -85,20 +85,12 @@ auto b_encoder_main(int argc, char *argv[]) -> int {
     // A vector the same size as the message
     std::vector<int> indices(message.cols * message.rows);
 
-//    for (int i = 0; i < message.rows; i++) {
-//        for (int j = 0; j < message.cols; j++) {
-//            indices.push_back(message.at<uchar>(i, j));
-//        }
-//    }
-
     // Prepopulate the indices vector with values from 0 to indices.size()
     for(int i = 0; i < indices.size(); i++) {
         indices[i] = i;
     }
 
     // shuffle
-
-    // convert the message to a vector for shuffling
 
     std::mt19937 gen;
     gen.seed(random_seed);
@@ -107,38 +99,38 @@ auto b_encoder_main(int argc, char *argv[]) -> int {
     // Shuffles the message
     std::shuffle(indices.begin(), indices.end(), gen);
 
-//    int index = 0;
+    auto shuffled_message = message.clone();
 
-    // Convert back to matrix
-//    for (int i = 0; i < message.rows; i++) {
-//        for (int j = 0; j < message.cols; j++) {
-//            message.at<uchar>(i, j) = indices[index];
-//            index++;
-//        }
-//    }
+    int shuffle_index = 0;
+    for (auto& pix: shuffled_message) {
+        auto& new_location = *(shuffled_message.begin() + indices[shuffle_index]);
 
-//    auto encoded = a_encode(carrier, message);
-//    encoded = a_encode(carrier, message);
+        std::swap(pix, new_location);
+
+        shuffle_index++;
+    }
+
+    auto encoded = a_encode(carrier, shuffled_message);
 
     // for a 2X2 mat will have a 0, 1, 2, 3
-    auto encoded = carrier.clone();
-
-    int index = 0;
-    for (auto& pixel: message) {
-
-        // value at location
-        auto index_in_encoded = (encoded.begin() + indices[index]);
-        auto& encoded_pixel_ptr = *index_in_encoded;
-
-        if (encoded_pixel_ptr != 255) {
-            if (pixel == 0) {
-                encoded_pixel_ptr += 1;
-            } else {
-                encoded_pixel_ptr += 0;
-            }
-        }
-        index++;
-    }
+//    auto encoded = carrier.clone();
+//
+//    int index = 0;
+//    for (auto& pixel: message) {
+//
+//        // value at location
+//        auto index_in_encoded = (encoded.begin() + indices[index]);
+//        auto& encoded_pixel_ptr = *index_in_encoded;
+//
+//        if (encoded_pixel_ptr != 255) {
+//            if (pixel == 0) {
+//                encoded_pixel_ptr += 1;
+//            } else {
+//                encoded_pixel_ptr += 0;
+//            }
+//        }
+//        index++;
+//    }
 
 
 //    for (int i = 0; i < message.rows; i++) {
@@ -165,68 +157,6 @@ auto b_encoder_main(int argc, char *argv[]) -> int {
 
     return image_write_result ? 0 : 1;
 }
-
-/**
-* # Usage:
-*
-* To run the program, execute it with: `program.exe <carrier_dir> <output_dir>`
-* Part A encoding: `program.exe <carrier_dir> <message_dir> <encoded_des>`
-* Part A decoding: `program.exe <carrier_dir> <encoded_dir> <decoded_des>`
-*
-* Part B encoding: `program.exe <carrier_dir> <message_dir> <encoded_des>`
-* Part B decoding: `program.exe <carrier_dir> <encoded_dir> <decoded_des>`
-*
-* @param argc
-* @param argv
-*/
-//auto process_cmd_line(int argc, char *argv[]) -> int {
-//    std::cout << "Processing..." << std::endl;
-//
-//    return 0;
-//}
-//
-//auto debug_cmd_line_args(const char *carrier, const char *message, const char *encoded) -> void {
-//    std::cout << "Carrier: " << carrier << "\nMessage: " << message << "\nEncoded: " << encoded << std::endl;
-//}
-//
-//auto debug_image(const char *image_name, const cv::Mat &image) -> void {
-//    cv::namedWindow(image_name, cv::WINDOW_AUTOSIZE);
-//
-//    cv::imshow(image_name, image);
-//
-//    cv::waitKey(0);
-//}
-
-/**
-* TODO What about the overflow?
-*
-* @param carrier
-* @param message
-* @return
-*/
-//auto encode(cv::Mat carrier, cv::Mat message) -> cv::Mat {
-//    cv::Mat encoded;
-//
-//    debug_image("Original test", message);
-//
-//    // convert message to binary
-//    // TODO: cv::THRESH_BINARY or cv::THRESH_BINARY_INV?
-////    cv::threshold(message, message, 0, 1, cv::THRESH_BINARY_INV);
-//    cv::threshold(message, message, 0, 1, cv::THRESH_BINARY);
-//
-//    debug_image("Threshold test", message * 255);
-//
-//    // What is even the point of this?!
-////    message = cv::Mat_<uchar>::ones(message.size()) - message;
-//
-//    // print image
-//
-//    debug_image("Binary test", message * 255);
-//
-//    encoded = carrier + message;
-//
-//    return encoded;
-//}
 
 /**
  * Taken from http://www.cse.yorku.ca/~oz/hash.html
