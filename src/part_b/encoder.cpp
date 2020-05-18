@@ -12,6 +12,7 @@
 #include <random>
 #include <vector>
 #include <algorithm>
+#include <iterator>
 
 /**
  * TODO Function should include creating directories if it does not exist.
@@ -96,49 +97,54 @@ auto b_encoder_main(int argc, char *argv[]) -> int {
     gen.seed(random_seed);
 //    cv::RNG gen(random_seed);
 
-    // Shuffles the message
+    // Shuffles the locations
     std::shuffle(indices.begin(), indices.end(), gen);
 
     auto shuffled_message = message.clone();
 
-    int shuffle_index = 0;
-    for (auto& pix: shuffled_message) {
-        auto& new_location = *(shuffled_message.begin() + indices[shuffle_index]);
+    debug_image("Pre shuffled", shuffled_message);
 
-        std::swap(pix, new_location);
+//    std::cout << "Indices size: " << indices.size() << ", shuffled size: " << shuffled_message.total() << std::endl;
 
-        shuffle_index++;
+    for (int i = 0; i < shuffled_message.total(); i++) {
+        auto mes_iter = shuffled_message.begin();
+        auto ind_iter = indices.begin();
+
+        std::advance(mes_iter, i);
+        auto& current = *mes_iter;
+
+        std::advance(ind_iter, i);
+        std::advance(mes_iter, *ind_iter);
+
+        auto& new_val = *mes_iter;
+
+        std::swap(current, new_val);
+
     }
 
+//    debug_image("First shuffled", shuffled_message);
+//
+//    auto test_message = shuffled_message.clone();
+//
+//    for (int i = 0; i < test_message.total(); i++) {
+//
+//        auto mes_iter = test_message.begin();
+//        auto ind_iter = indices.begin();
+//
+//        std::advance(mes_iter, i);
+//        auto& current = *mes_iter;
+//
+//        std::advance(ind_iter, i);
+//        std::advance(mes_iter, *ind_iter);
+//
+//        auto& new_val = *mes_iter;
+//
+//        std::swap(current, new_val);
+//    }
+
+//    debug_image("Re-shuffled", test_message);
+
     auto encoded = a_encode(carrier, shuffled_message);
-
-    // for a 2X2 mat will have a 0, 1, 2, 3
-//    auto encoded = carrier.clone();
-//
-//    int index = 0;
-//    for (auto& pixel: message) {
-//
-//        // value at location
-//        auto index_in_encoded = (encoded.begin() + indices[index]);
-//        auto& encoded_pixel_ptr = *index_in_encoded;
-//
-//        if (encoded_pixel_ptr != 255) {
-//            if (pixel == 0) {
-//                encoded_pixel_ptr += 1;
-//            } else {
-//                encoded_pixel_ptr += 0;
-//            }
-//        }
-//        index++;
-//    }
-
-
-//    for (int i = 0; i < message.rows; i++) {
-//        for (int j = 0; j < message.cols; j++) {
-//            auto encoded_pix = encoded.at<uchar>(i, j);
-//            index++;
-//        }
-//    }
 
     // Processing complete.
 

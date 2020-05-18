@@ -12,6 +12,7 @@
 #include <random>
 #include <vector>
 #include <algorithm>
+#include <iterator>
 
 /**
  * TODO Function should include creating directories if it does not exist.
@@ -98,47 +99,33 @@ auto b_decoder_main(int argc, char *argv[]) -> int {
 
 //    auto shuffled_message = message.clone();
 
-    int shuffle_index = 0;
-    for (auto& pix: decoded) {
-        auto& new_location = *(decoded.begin() + indices[shuffle_index]);
+//    int shuffle_index = 0;
+//    for (auto& pix: decoded) {
+//        auto& new_location = *(decoded.begin() + indices[shuffle_index]);
+//
+//        // This should swap the pixels back.
+//        std::swap(pix, new_location);
+//
+//        shuffle_index++;
+//    }
 
-        // This should swap the pixels back.
-        std::swap(pix, new_location);
+    for (int i = 0; i < decoded.total(); i++) {
+        auto dec_iter = decoded.begin();
+        auto ind_iter = indices.begin();
 
-        shuffle_index++;
+        std::advance(dec_iter, i);
+        auto& current = *dec_iter;
+
+        std::advance(ind_iter, i);
+        std::advance(dec_iter, *ind_iter);
+
+        auto& new_val = *dec_iter;
+
+        std::swap(current, new_val);
     }
 
-    debug_image("Reshuffled", decoded);
 
-//    auto decoded = carrier.clone();
-////    auto carrier_pixel = *(carrier.begin());
-////    auto encoded_pixel = *(encoded.begin());
-//
-//    int index = 0;
-//    for (auto& pixel: decoded) {
-//
-//        // value at location
-////        auto& new_encoded_pixel = *(encoded.begin() + indices[index]);
-//
-//
-//        auto index_in_carrier = carrier.begin() + indices[index];
-//        auto index_in_encoded = encoded.begin() + indices[index];
-//
-//        auto carrier_pixel = *index_in_carrier;
-//        auto encoded_pixel = *index_in_encoded;
-//
-////        std::cout << carrier_pixel << std::endl;
-////        std::cout << encoded_pixel << std::endl;
-//
-//        if ((encoded_pixel - carrier_pixel) == 1) {
-//            std::cout << "Here" << std::endl;
-//            pixel = 0;
-//        } else {
-//            pixel = 255;
-//        }
-//
-//        index++;
-//    }
+    debug_image("Reshuffled", decoded);
 
     // Processing complete.
 
