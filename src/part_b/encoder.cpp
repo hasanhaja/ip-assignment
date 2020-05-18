@@ -114,6 +114,9 @@ auto b_encoder_main(int argc, char *argv[]) -> int {
         auto& current = *mes_iter;
 
         std::advance(ind_iter, i);
+
+        // reset it before advancing again
+        mes_iter = shuffled_message.begin();
         std::advance(mes_iter, *ind_iter);
 
         auto& new_val = *mes_iter;
@@ -135,6 +138,8 @@ auto b_encoder_main(int argc, char *argv[]) -> int {
 //        auto& current = *mes_iter;
 //
 //        std::advance(ind_iter, i);
+
+//        mes_iter = shuffled_message.begin();
 //        std::advance(mes_iter, *ind_iter);
 //
 //        auto& new_val = *mes_iter;

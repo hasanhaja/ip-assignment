@@ -12,6 +12,7 @@
 #include <random>
 #include <vector>
 #include <algorithm>
+#include <iterator>
 
 /**
  * TODO Function should include creating directories if it does not exist.
@@ -101,24 +102,71 @@ auto d_encoder_main(int argc, char *argv[]) -> int {
     // for a 2X2 mat will have a 0, 1, 2, 3
     auto encoded = carrier.clone();
 
-    int index = 0;
-    for (auto& pixel: message) {
-        for (auto bgr: {0, 1, 2}) {
-            // value at location
-            auto index_in_encoded = (encoded.begin() + indices[index]);
-            auto& encoded_pixel_ptr = (*index_in_encoded)[bgr];
+    auto shuffled_message = message.clone();
 
-            if (encoded_pixel_ptr != 255) {
-                if (pixel == 0) {
-                    encoded_pixel_ptr += 1;
-                } else {
-                    encoded_pixel_ptr += 0;
-                }
+//    std::cout << "Cloned" << std::endl;
+
+    for (int i = 0; i < shuffled_message.total(); i++) {
+        auto mes_iter = shuffled_message.begin();
+        auto ind_iter = indices.begin();
+
+        std::advance(mes_iter, i);
+        auto& current = *mes_iter;
+
+        std::advance(ind_iter, i);
+
+        mes_iter = shuffled_message.begin();
+        std::advance(mes_iter, *ind_iter);
+
+        auto& new_val = *mes_iter;
+
+        std::swap(current, new_val);
+
+    }
+
+//    std::cout << "Shuffled" << std::endl;
+
+    for (int i = 0; i < shuffled_message.total(); i++) {
+//        for (auto bgr: {0,1,2}) {
+//
+//
+//        }
+//        std::cout << "Here" << std::endl;
+        auto mes_iter = shuffled_message.begin();
+        auto enc_iter = encoded.begin();
+
+        std::advance(mes_iter, i);
+        auto& cur_mes = *mes_iter;
+
+        std::advance(enc_iter, i);
+        auto& cur_enc = (*enc_iter)[0];
+
+        if (cur_enc != 255) {
+            if (cur_mes == 0) {
+                cur_enc += 1;
+            } else {
+                cur_enc += 0;
             }
         }
-
-        index++;
     }
+
+//    for (auto& pixel: message) {
+//        for (auto bgr: {0, 1, 2}) {
+//            // value at location
+//            auto index_in_encoded = (encoded.begin() + indices[index]);
+//            auto& encoded_pixel_ptr = (*index_in_encoded)[bgr];
+//
+//            if (encoded_pixel_ptr != 255) {
+//                if (pixel == 0) {
+//                    encoded_pixel_ptr += 1;
+//                } else {
+//                    encoded_pixel_ptr += 0;
+//                }
+//            }
+//        }
+//
+//        index++;
+//    }
 
     // Processing complete.
 

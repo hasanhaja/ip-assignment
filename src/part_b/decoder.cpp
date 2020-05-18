@@ -97,18 +97,6 @@ auto b_decoder_main(int argc, char *argv[]) -> int {
 
     auto decoded = a_decode(carrier, encoded);
 
-//    auto shuffled_message = message.clone();
-
-//    int shuffle_index = 0;
-//    for (auto& pix: decoded) {
-//        auto& new_location = *(decoded.begin() + indices[shuffle_index]);
-//
-//        // This should swap the pixels back.
-//        std::swap(pix, new_location);
-//
-//        shuffle_index++;
-//    }
-
     for (int i = 0; i < decoded.total(); i++) {
         auto dec_iter = decoded.begin();
         auto ind_iter = indices.begin();
@@ -117,16 +105,15 @@ auto b_decoder_main(int argc, char *argv[]) -> int {
         auto& current = *dec_iter;
 
         std::advance(ind_iter, i);
+
+        dec_iter = decoded.begin();
         std::advance(dec_iter, *ind_iter);
 
         auto& new_val = *dec_iter;
 
         std::swap(current, new_val);
     }
-
-
-    debug_image("Reshuffled", decoded);
-
+    
     // Processing complete.
 
     // Output

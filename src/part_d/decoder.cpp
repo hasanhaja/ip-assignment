@@ -85,18 +85,6 @@ auto d_decoder_main(int argc, char *argv[]) -> int {
     // A vector the same size as the message
     std::vector<int> indices(encoded.cols * encoded.rows);
 
-//    auto decoded = a_decode(carrier, encoded);
-
-//    for (int i = 0; i < decoded.rows; i++) {
-//        for (int j = 0; j < decoded.cols; j++) {
-//            indices.push_back(decoded.at<uchar>(i, j));
-//        }
-//    }
-
-//    // Prepopulate the indices vector with values from 0 to indices.size()
-//    for(int i = 0; i < indices.size(); i++) {
-//        indices[i] = i;
-//    }
 
     // convert the message to a vector for shuffling
 
@@ -106,19 +94,6 @@ auto d_decoder_main(int argc, char *argv[]) -> int {
 
     // Shuffles the message
     std::shuffle(indices.begin(), indices.end(), gen);
-
-//    int index = 0;
-
-    // Convert back to matrix
-//    for (int i = 0; i < decoded.rows; i++) {
-//        for (int j = 0; j < decoded.cols; j++) {
-//            decoded.at<uchar>(i, j) = indices[index];
-//            index++;
-//        }
-//    }
-
-//    auto decoded = carrier.clone();
-//    cv::cvtColor(decoded, decoded, cv::COLOR_BGR2GRAY);
 
     cv::Mat_<uchar> decoded = cv::imread(carrier_name, cv::IMREAD_GRAYSCALE);
 //    auto carrier_pixel = *(carrier.begin());
@@ -131,54 +106,45 @@ auto d_decoder_main(int argc, char *argv[]) -> int {
         return -1;
     }
 
-    int index = 0;
-    for (auto& pixel: decoded) {
+    for (int i = 0; i < decoded.total(); i++) {
+//        for (auto bgr: {0,1,2}) {
+//
+//        }
 
-        // value at location
-//        auto& new_encoded_pixel = *(encoded.begin() + indices[index]);
+        auto dec_iter = decoded.begin();
+        auto enc_iter = encoded.begin();
 
+        std::advance(dec_iter, i);
+        auto& cur_dec = *dec_iter;
 
-        auto index_in_carrier = carrier.begin() + indices[index];
-        auto index_in_encoded = encoded.begin() + indices[index];
+        std::advance(enc_iter, i);
+        auto& cur_enc = (*enc_iter)[0];
 
-        auto carrier_pixel = *index_in_carrier;
-        auto encoded_pixel = *index_in_encoded;
-
-//        std::cout << carrier_pixel << std::endl;
-//        std::cout << encoded_pixel << std::endl;
-
-        // The same value gets written to every channel
-        if ((encoded_pixel[0] - carrier_pixel[0]) == 1) {
-            std::cout << "Here" << std::endl;
-            pixel = 0;
+        if ((cur_enc - cur_dec) == 1) {
+            cur_dec = 0;
         } else {
-            pixel = 255;
+            cur_dec = 255;
         }
-
-        index++;
     }
 
-//    auto encoded = carrier.clone();
-//
-//    int index = 0;
-//    for (auto& pixel: message) {
-//
-//        // value at location
-//        auto index_in_encoded = (encoded.begin() + indices[index]);
-//        auto encoded_pixel_ptr = *index_in_encoded;
-//
-//        if (encoded_pixel_ptr != 255) {
-//            if (pixel == 0) {
-//                encoded_pixel_ptr += 1;
-//            } else {
-//                encoded_pixel_ptr += 0;
-//            }
-//        }
-//        index++;
-//    }
+    // Shuffle decoded back
+    for (int i = 0; i < decoded.total(); i++) {
+        auto dec_iter = decoded.begin();
+        auto ind_iter = indices.begin();
 
-//    decoded *= 255;
-//    auto decoded = a_decode(carrier, encoded);
+        std::advance(dec_iter, i);
+        auto& current = *dec_iter;
+
+        std::advance(ind_iter, i);
+
+        dec_iter = decoded.begin();
+        std::advance(dec_iter, *ind_iter);
+
+        auto& new_val = *dec_iter;
+
+        std::swap(current, new_val);
+
+    }
 
     // Processing complete.
 
