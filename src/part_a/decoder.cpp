@@ -36,7 +36,7 @@ auto a_decoder_main(int argc, char* argv[]) -> int {
 
     auto image_write_result = false;
 
-    std::cout << "Processing encoder..." << std::endl;
+    std::cout << "Processing decoder..." << std::endl;
 
     debug_cmd_line_args(carrier_name, encoded_name, decoded_des);
 
@@ -45,7 +45,7 @@ auto a_decoder_main(int argc, char* argv[]) -> int {
 
     if (carrier.empty() || encoded.empty()) {
         std::cerr <<
-                  "ERROR: Either carrier image nor message image does not exist."
+                  "ERROR: Either carrier image nor encoded image does not exist."
                   << std::endl;
         return -1;
     }
@@ -56,7 +56,7 @@ auto a_decoder_main(int argc, char* argv[]) -> int {
 
     if (carrier.size() != encoded.size()) {
         std::cerr <<
-                  "ERROR: The carrier and the message are not the same size."
+                  "ERROR: The carrier and the encoded are not the same size."
                   << std::endl;
         return -1;
     }
@@ -75,13 +75,13 @@ auto a_decoder_main(int argc, char* argv[]) -> int {
     try {
         image_write_result = cv::imwrite(decoded_des, decoded);
     } catch (const cv::Exception& cv_ex) {
-        std::cerr << "ERROR: Encoded image write failed.\n" << cv_ex.what() << std::endl;
+        std::cerr << "ERROR: Decoded image write failed.\n" << cv_ex.what() << std::endl;
     }
 
     if (image_write_result) {
-        std::cout << "SUCCESS: Encoded image written successfully." << std::endl;
+        std::cout << "SUCCESS: Decoded image written successfully." << std::endl;
     } else {
-        std::cerr << "ERROR: Encoded image write failed." << std::endl;
+        std::cerr << "ERROR: Decoded image write failed." << std::endl;
     }
 
     return image_write_result ? 0 : 1;

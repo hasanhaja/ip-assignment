@@ -2,8 +2,8 @@
 // Created by Hasan on 17/05/20.
 //
 
-#ifndef IP_ASSIGNMENT_PARTB_ENCODER_CPP
-#define IP_ASSIGNMENT_PARTB_ENCODER_CPP
+#ifndef IP_ASSIGNMENT_PARTB_DECODER_CPP
+#define IP_ASSIGNMENT_PARTB_DECODER_CPP
 
 
 #include <iostream>
@@ -24,15 +24,15 @@
 //int process_cmd_line(int argc, char* argv[]);
 auto debug_cmd_line_args(const char *carrier, const char *message, const char *encoded) -> void;
 auto debug_image(const char* image_name, const cv::Mat& image) -> void;
-auto a_encode(cv::Mat carrier, cv::Mat message) -> cv::Mat;
+auto a_decode(cv::Mat carrier, cv::Mat message) -> cv::Mat;
 auto hash(const char* passsword) -> unsigned long;
 
 /**
 * Part A encoding: `program.exe <carrier_dir> <message_dir> <encoded_des>`
 * Part A decoding: `program.exe <carrier_dir> <encoded_dir> <decoded_des>`
 */
-auto b_encoder_main(int argc, char *argv[]) -> int {
-    // Process command line inputs and handle errors
+auto b_decoder_main(int argc, char *argv[]) -> int {
+// Process command line inputs and handle errors
     if (argc < 5) {
         std::cerr <<
                   "Not enough arguments into the program.\nThe usage is program.exe <carrier_dir> <message_dir> <encoded_des>"
@@ -42,21 +42,21 @@ auto b_encoder_main(int argc, char *argv[]) -> int {
     }
 
     auto carrier_name = argv[2];
-    auto message_name = argv[3];
-    auto encoded_des = argv[4];
+    auto encoded_name = argv[3];
+    auto decoded_des = argv[4];
 
     auto image_write_result = false;
 
-    std::cout << "Processing encoder..." << std::endl;
+    std::cout << "Processing decoder..." << std::endl;
 
-    debug_cmd_line_args(carrier_name, message_name, encoded_des);
+    debug_cmd_line_args(carrier_name, encoded_name, decoded_des);
 
     cv::Mat_<uchar> carrier = cv::imread(carrier_name, cv::IMREAD_GRAYSCALE);
-    cv::Mat_<uchar> message = cv::imread(message_name, cv::IMREAD_GRAYSCALE);
+    cv::Mat_<uchar> encoded = cv::imread(encoded_name, cv::IMREAD_GRAYSCALE);
 
-    if (carrier.empty() || message.empty()) {
+    if (carrier.empty() || encoded.empty()) {
         std::cerr <<
-                  "ERROR: Either carrier image nor message image does not exist."
+                  "ERROR: Either carrier image nor encoded image does not exist."
                   << std::endl;
         return -1;
     }
@@ -65,9 +65,9 @@ auto b_encoder_main(int argc, char *argv[]) -> int {
 
     // Check if the images are the same size
 
-    if (carrier.size() != message.size()) {
+    if (carrier.size() != encoded.size()) {
         std::cerr <<
-                  "ERROR: The carrier and the message are not the same size."
+                  "ERROR: The carrier and the encoded are not the same size."
                   << std::endl;
         return -1;
     }
@@ -83,20 +83,20 @@ auto b_encoder_main(int argc, char *argv[]) -> int {
     auto random_seed = (unsigned int) hash(password);
 
     // A vector the same size as the message
-    std::vector<int> indices(message.cols * message.rows);
+    std::vector<int> indices(encoded.cols * encoded.rows);
 
-//    for (int i = 0; i < message.rows; i++) {
-//        for (int j = 0; j < message.cols; j++) {
-//            indices.push_back(message.at<uchar>(i, j));
+//    auto decoded = a_decode(carrier, encoded);
+
+//    for (int i = 0; i < decoded.rows; i++) {
+//        for (int j = 0; j < decoded.cols; j++) {
+//            indices.push_back(decoded.at<uchar>(i, j));
 //        }
 //    }
 
-    // Prepopulate the indices vector with values from 0 to indices.size()
-    for(int i = 0; i < indices.size(); i++) {
-        indices[i] = i;
-    }
-
-    // shuffle
+//    // Prepopulate the indices vector with values from 0 to indices.size()
+//    for(int i = 0; i < indices.size(); i++) {
+//        indices[i] = i;
+//    }
 
     // convert the message to a vector for shuffling
 
@@ -110,56 +110,51 @@ auto b_encoder_main(int argc, char *argv[]) -> int {
 //    int index = 0;
 
     // Convert back to matrix
-//    for (int i = 0; i < message.rows; i++) {
-//        for (int j = 0; j < message.cols; j++) {
-//            message.at<uchar>(i, j) = indices[index];
+//    for (int i = 0; i < decoded.rows; i++) {
+//        for (int j = 0; j < decoded.cols; j++) {
+//            decoded.at<uchar>(i, j) = indices[index];
 //            index++;
 //        }
 //    }
 
-//    auto encoded = a_encode(carrier, message);
-//    encoded = a_encode(carrier, message);
-
-    // for a 2X2 mat will have a 0, 1, 2, 3
-    auto encoded = carrier.clone();
+    auto decoded = carrier.clone();
+    auto carrier_pixel = *(carrier.begin());
+    auto encoded_pixel = *(encoded.begin());
 
     int index = 0;
-    for (auto& pixel: message) {
+    for (auto& pixel: decoded) {
 
         // value at location
-        auto& new_encoded_pixel = *(encoded.begin() + indices[index]);
+//        auto& new_encoded_pixel = *(encoded.begin() + indices[index]);
+        carrier_pixel = *(carrier.begin() + indices[index]);
+        encoded_pixel = *(encoded.begin() + indices[index]);
 
-        if (new_encoded_pixel != 255) {
-            if (pixel == 0) {
-                new_encoded_pixel += 0;
-            } else {
-                new_encoded_pixel += 1;
-            }
+
+        if ((encoded_pixel - carrier_pixel) == 0) {
+            pixel += 0;
+        } else {
+            pixel += 1;
         }
+
         index++;
     }
 
-
-//    for (int i = 0; i < message.rows; i++) {
-//        for (int j = 0; j < message.cols; j++) {
-//            auto encoded_pix = encoded.at<uchar>(i, j);
-//            index++;
-//        }
-//    }
+    decoded *= 255;
+//    auto decoded = a_decode(carrier, encoded);
 
     // Processing complete.
 
     // Output
     try {
-        image_write_result = cv::imwrite(encoded_des, encoded);
+        image_write_result = cv::imwrite(decoded_des, decoded);
     } catch (const cv::Exception &cv_ex) {
-        std::cerr << "ERROR: Encoded image write failed.\n" << cv_ex.what() << std::endl;
+        std::cerr << "ERROR: Decoded image write failed.\n" << cv_ex.what() << std::endl;
     }
 
     if (image_write_result) {
-        std::cout << "SUCCESS: Encoded image written successfully." << std::endl;
+        std::cout << "SUCCESS: Decoded image written successfully." << std::endl;
     } else {
-        std::cerr << "ERROR: Encoded image write failed." << std::endl;
+        std::cerr << "ERROR: Decoded image write failed." << std::endl;
     }
 
     return image_write_result ? 0 : 1;
@@ -232,15 +227,15 @@ auto b_encoder_main(int argc, char *argv[]) -> int {
  * @param str
  * @return
  */
-auto hash(const char* password) -> unsigned long {
-    unsigned long hash = 5381;
-    int c;
-
-    while (c = *password++)
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-
-    return hash;
-}
+//auto hash(const char* password) -> unsigned long {
+//    unsigned long hash = 5381;
+//    int c;
+//
+//    while (c = *password++)
+//        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+//
+//    return hash;
+//}
 
 //}
-#endif // IP_ASSIGNMENT_PARTB_ENCODER_CPP
+#endif // IP_ASSIGNMENT_PARTB_DECODER_CPP
