@@ -16,6 +16,9 @@ auto b_encoder_main(int argc, char* argv[]) -> int;
 auto b_decoder_main(int argc, char* argv[]) -> int;
 
 auto c_main(int argc, char *argv[]) -> int;
+
+auto d_encoder_main(int argc, char* argv[]) -> int;
+auto d_decoder_main(int argc, char* argv[]) -> int;
 //
 ///**
 // * TODO Function should include creating directories if it does not exist.
@@ -50,9 +53,9 @@ auto main(int argc, char* argv[]) -> int {
     }
 
     if (encode_flag.compare(argv[1]) == 0) {
-        return b_encoder_main(argc, argv);
+        return d_encoder_main(argc, argv);
     } else if (decode_flag.compare(argv[1]) == 0) {
-        return b_decoder_main(argc, argv);
+        return d_decoder_main(argc, argv);
     }
 
     return -1;

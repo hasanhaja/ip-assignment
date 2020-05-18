@@ -84,6 +84,8 @@ auto combine_noise_and_carrier(cv::Mat carrier, const char* password) -> cv::Mat
 
     auto output = carrier.clone();
 
+    cv::threshold(carrier, carrier, 64, 128, cv::THRESH_BINARY_INV);
+
     // TODO prompt for password
 //    auto password = "password";
     auto random_seed = (unsigned int) hash(password);
