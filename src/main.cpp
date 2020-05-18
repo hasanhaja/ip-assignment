@@ -14,6 +14,8 @@ auto a_decoder_main(int argc, char* argv[]) -> int;
 
 auto b_encoder_main(int argc, char* argv[]) -> int;
 auto b_decoder_main(int argc, char* argv[]) -> int;
+
+auto c_main(int argc, char *argv[]) -> int;
 //
 ///**
 // * TODO Function should include creating directories if it does not exist.
@@ -27,9 +29,19 @@ auto main(int argc, char* argv[]) -> int {
 
     std::string encode_flag = "--encode";
     std::string decode_flag = "--decode";
+    std::string gen_noise_flag = "--noise";
 
     // TODO print usage
-    if (argc < 5) {
+    if (argc == 4) {
+        if (gen_noise_flag.compare(argv[1]) == 0) {
+            return c_main(argc, argv);
+        } else {
+            std::cerr <<
+                      "Not enough arguments into the program.\nThe usage is program.exe <carrier_dir> <message_dir> <encoded_des>"
+                      << std::endl;
+            return -1;
+        }
+    } else if (argc < 5) {
         std::cerr <<
                   "Not enough arguments into the program.\nThe usage is program.exe <carrier_dir> <message_dir> <encoded_des>"
                   << std::endl;

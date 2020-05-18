@@ -25,7 +25,7 @@
 auto debug_cmd_line_args(const char *carrier, const char *message, const char *encoded) -> void;
 auto debug_image(const char* image_name, const cv::Mat& image) -> void;
 auto a_encode(cv::Mat carrier, cv::Mat message) -> cv::Mat;
-auto hash(const char* passsword) -> unsigned long;
+auto hash(const char* password) -> unsigned long;
 
 /**
 * Part A encoding: `program.exe <carrier_dir> <message_dir> <encoded_des>`
@@ -127,13 +127,14 @@ auto b_encoder_main(int argc, char *argv[]) -> int {
     for (auto& pixel: message) {
 
         // value at location
-        auto& new_encoded_pixel = *(encoded.begin() + indices[index]);
+        auto index_in_encoded = (encoded.begin() + indices[index]);
+        auto& encoded_pixel_ptr = *index_in_encoded;
 
-        if (new_encoded_pixel != 255) {
+        if (encoded_pixel_ptr != 255) {
             if (pixel == 0) {
-                new_encoded_pixel += 0;
+                encoded_pixel_ptr += 1;
             } else {
-                new_encoded_pixel += 1;
+                encoded_pixel_ptr += 0;
             }
         }
         index++;

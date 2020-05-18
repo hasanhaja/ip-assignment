@@ -118,28 +118,55 @@ auto b_decoder_main(int argc, char *argv[]) -> int {
 //    }
 
     auto decoded = carrier.clone();
-    auto carrier_pixel = *(carrier.begin());
-    auto encoded_pixel = *(encoded.begin());
+//    auto carrier_pixel = *(carrier.begin());
+//    auto encoded_pixel = *(encoded.begin());
 
     int index = 0;
     for (auto& pixel: decoded) {
 
         // value at location
 //        auto& new_encoded_pixel = *(encoded.begin() + indices[index]);
-        carrier_pixel = *(carrier.begin() + indices[index]);
-        encoded_pixel = *(encoded.begin() + indices[index]);
 
 
-        if ((encoded_pixel - carrier_pixel) == 0) {
-            pixel += 0;
+        auto index_in_carrier = carrier.begin() + indices[index];
+        auto index_in_encoded = encoded.begin() + indices[index];
+
+        auto carrier_pixel = *index_in_carrier;
+        auto encoded_pixel = *index_in_encoded;
+
+//        std::cout << carrier_pixel << std::endl;
+//        std::cout << encoded_pixel << std::endl;
+
+        if ((encoded_pixel - carrier_pixel) == 1) {
+            std::cout << "Here" << std::endl;
+            pixel = 0;
         } else {
-            pixel += 1;
+            pixel = 255;
         }
 
         index++;
     }
 
-    decoded *= 255;
+//    auto encoded = carrier.clone();
+//
+//    int index = 0;
+//    for (auto& pixel: message) {
+//
+//        // value at location
+//        auto index_in_encoded = (encoded.begin() + indices[index]);
+//        auto encoded_pixel_ptr = *index_in_encoded;
+//
+//        if (encoded_pixel_ptr != 255) {
+//            if (pixel == 0) {
+//                encoded_pixel_ptr += 1;
+//            } else {
+//                encoded_pixel_ptr += 0;
+//            }
+//        }
+//        index++;
+//    }
+
+//    decoded *= 255;
 //    auto decoded = a_decode(carrier, encoded);
 
     // Processing complete.

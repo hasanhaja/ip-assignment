@@ -113,7 +113,7 @@ auto a_encoder_main(int argc, char *argv[]) -> int {
 //}
 
 auto debug_cmd_line_args(const char *carrier, const char *message, const char *encoded) -> void {
-    std::cout << "Carrier: " << carrier << "\nMessage: " << message << "\nEncoded: " << encoded << std::endl;
+    std::cout << "Carrier: " << carrier << "\nMessage: " << message << "\nOutput: " << encoded << std::endl;
 }
 
 auto debug_image(const char *image_name, const cv::Mat &image) -> void {
